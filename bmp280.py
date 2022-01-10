@@ -188,17 +188,19 @@ class BMP280:
                     * self._T3) >> 14
             self._t_fine = var1 + var2
 
-    @property
-    def temperature(self):
-        self._calc_t_fine()
+    def _temperature(self):
         if self._t == 0:
             self._t = ((self._t_fine * 5 + 128) >> 8) / 100.
         return self._t
 
+
     @property
-    def pressure(self):
-        # From datasheet page 22
+    def temperature(self):
         self._calc_t_fine()
+        return self._temperature()
+
+    def _pressure(self):
+        # From datasheet page 22
         if self._p == 0:
             var1 = self._t_fine - 128000
             var2 = var1 * var1 * self._P6
@@ -218,6 +220,15 @@ class BMP280:
             p = ((p + var1 + var2) >> 8) + (self._P7 << 4)
             self._p = p / 256.0
         return self._p
+
+    @property
+    def pressure(self):
+        self._calc_t_fine()
+        return self._pressure()
+
+    def temperature_pressure(self):
+        self._calc_t_fine()
+        return self._temperature(), self._pressure()
 
     def _write_bits(self, address, value, length, shift=0):
         d = self._read(address)[0]
