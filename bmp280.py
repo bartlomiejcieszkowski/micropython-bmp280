@@ -226,6 +226,7 @@ class BMP280:
         self._calc_t_fine()
         return self._pressure()
 
+    @property
     def temperature_pressure(self):
         self._calc_t_fine()
         return self._temperature(), self._pressure()
